@@ -1,0 +1,151 @@
+# Lista global para armazenar os produtos
+produtos = []
+vendas = {}
+
+
+def adicionar_produto():
+    try:
+        nome = entry_nome.get()
+        descricao = entry_descricao.get()
+        preco = float(entry_preco.get())
+        quantidade = int(entry_quantidade.get())
+
+        produto = {
+            'nome': nome,
+            'descricao': descricao,
+            'preco': preco,
+            'quantidade': quantidade
+        }
+
+        produtos.append(produto)
+        vendas[nome] = 0  # Inicializa a quantidade vendida para o produto
+        messagebox.showinfo("Sucesso", "Produto adicionado com sucesso!")
+    except ValueError:
+        messagebox.showerror("Erro", "Por favor, insira valores válidos para preço e quantidade.")
+
+
+def mostrar_produtos():
+    # Criar uma nova janela para mostrar os produtos
+    janela_produtos = tk.Toplevel(root)
+    janela_produtos.title("Lista de Produtos")
+
+    # Adicionar rótulos para os títulos das colunas
+    tk.Label(janela_produtos, text="Nome").grid(row=0, column=0, padx=10, pady=5)
+    tk.Label(janela_produtos, text="Descrição").grid(row=0, column=1, padx=10, pady=5)
+    tk.Label(janela_produtos, text="Preço").grid(row=0, column=2, padx=10, pady=5)
+    tk.Label(janela_produtos, text="Quantidade").grid(row=0, column=3, padx=10, pady=5)
+
+    # Adicionar produtos na nova janela
+    for i, produto in enumerate(produtos, start=1):
+        tk.Label(janela_produtos, text=produto['nome']).grid(row=i, column=0, padx=10, pady=5)
+        tk.Label(janela_produtos, text=produto['descricao']).grid(row=i, column=1, padx=10, pady=5)
+        tk.Label(janela_produtos, text=f"{produto['preco']:.2f}").grid(row=i, column=2, padx=10, pady=5)
+        tk.Label(janela_produtos, text=produto['quantidade']).grid(row=i, column=3, padx=10, pady=5)
+
+
+def registrar_vendas():
+    try:
+        nome = entry_nome_venda.get()
+        quantidade_vendida = int(entry_quantidade_venda.get())
+
+        # Encontrar o produto na lista de produtos
+        for produto in produtos:
+            if produto['nome'] == nome:
+                if nome in vendas:
+                    vendas[nome] += quantidade_vendida
+                    messagebox.showinfo("Sucesso", f"Quantidade de {nome} vendida registrada com sucesso!")
+                else:
+                    messagebox.showerror("Erro", "Produto não encontrado na lista.")
+                break
+        else:
+            messagebox.showerror("Erro", "Produto não encontrado na lista.")
+    except ValueError:
+        messagebox.showerror("Erro", "Por favor, insira um valor válido para a quantidade.")
+
+
+def gerar_relatorio_vendas():
+    # Criar uma nova janela para mostrar o relatório de vendas
+    janela_relatorio = tk.Toplevel(root)
+    janela_relatorio.title("Relatório de Vendas")
+
+    # Adicionar rótulos para os títulos das colunas
+    tk.Label(janela_relatorio, text="Nome").grid(row=0, column=0, padx=10, pady=5)
+    tk.Label(janela_relatorio, text="Quantidade Vendida").grid(row=0, column=1, padx=10, pady=5)
+    tk.Label(janela_relatorio, text="Total Vendido").grid(row=0, column=2, padx=10, pady=5)
+
+    row = 1
+    for produto in produtos:
+        nome = produto['nome']
+        quantidade_vendida = vendas.get(nome, 0)
+        total_vendido = quantidade_vendida * produto['preco']
+        tk.Label(janela_relatorio, text=nome).grid(row=row, column=0, padx=10, pady=5)
+        tk.Label(janela_relatorio, text=quantidade_vendida).grid(row=row, column=1, padx=10, pady=5)
+        tk.Label(janela_relatorio, text=f"{total_vendido:.2f}").grid(row=row, column=2, padx=10, pady=5)
+        row += 1
+
+
+# Criar a janela principal
+root = tk.Tk()
+
+# Definir o título da janela
+root.title("Sistema de Gerenciamento de Estoque")
+
+texto_orientacao = tk.Label(root, text="Bem-vindo ao seu sistema de gerenciamento de estoque")
+texto_orientacao.grid(row=0, column=1, columnspan=3)
+
+# Criar e posicionar os rótulos e entradas para adicionar produtos
+label_nome = tk.Label(root, text="Nome do produto:")
+label_nome.grid(row=1, column=1)
+
+entry_nome = tk.Entry(root)
+entry_nome.grid(row=1, column=2)
+
+label_descricao = tk.Label(root, text="Descrição:")
+label_descricao.grid(row=2, column=1)
+
+entry_descricao = tk.Entry(root)
+entry_descricao.grid(row=2, column=2)
+
+label_preco = tk.Label(root, text="Preço:")
+label_preco.grid(row=3, column=1)
+
+entry_preco = tk.Entry(root)
+entry_preco.grid(row=3, column=2)
+
+label_quantidade = tk.Label(root, text="Quantidade:")
+label_quantidade.grid(row=4, column=1)
+
+entry_quantidade = tk.Entry(root)
+entry_quantidade.grid(row=4, column=2)
+
+# Criar o botão de adicionar produto
+button_adicionar = tk.Button(root, text="Adicionar", command=adicionar_produto)
+button_adicionar.grid(row=5, column=1, columnspan=2)
+
+# Criar o botão para mostrar produtos
+button_mostrar = tk.Button(root, text="Mostrar Produtos", command=mostrar_produtos)
+button_mostrar.grid(row=6, column=1, columnspan=2)
+
+# Criar rótulos e entradas para registrar vendas
+label_nome_venda = tk.Label(root, text="Nome do produto:")
+label_nome_venda.grid(row=7, column=1)
+
+entry_nome_venda = tk.Entry(root)
+entry_nome_venda.grid(row=7, column=2)
+
+label_quantidade_venda = tk.Label(root, text="Quantidade vendida:")
+label_quantidade_venda.grid(row=8, column=1)
+
+entry_quantidade_venda = tk.Entry(root)
+entry_quantidade_venda.grid(row=8, column=2)
+
+# Criar o botão de registrar vendas
+button_registrar_vendas = tk.Button(root, text="Registrar Venda", command=registrar_vendas)
+button_registrar_vendas.grid(row=9, column=1, columnspan=2)
+
+# Criar o botão para gerar relatório de vendas
+button_relatorio = tk.Button(root, text="Gerar Relatório de Vendas", command=gerar_relatorio_vendas)
+button_relatorio.grid(row=10, column=1, columnspan=2)
+
+# Iniciar o loop principal do tkinter
+root.mainloop()
